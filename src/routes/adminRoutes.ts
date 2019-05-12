@@ -1,16 +1,17 @@
 import { Router } from 'express';
+import AdminController from '../controllers/AdminController';
 
-class AdminRoutes { 
+class AdminRoutes extends AdminController { 
   private router: Router;
 
   constructor() {
-    // super();
+    super();
     this.router = Router();
 		this.routes();
   }
 
   private routes(): void {
-		this.router.get('/', (req, res) => res.send("Admin Routes "));
+		this.router.get('/', this.test);
 	}
 
 	public getRouter() {
