@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Helpers from '../utils/Helpers';
+import Helper from '../utils/Helpers';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
 	require('dotenv').config();
 }
 
-class UserController extends Helpers {
+class UserController {
 	private SECRET: string = process.env.SECRET || '';
 
 	/**
@@ -20,10 +20,12 @@ class UserController extends Helpers {
 		try {
 			const { firstName, middleName, lastName, lastName2, email, password } = req.body;
 
+			console.log("this is this ", this)
+
 			//* Checking if user exists
 			const user = await User.findOne({ email });
 			if (user) {
-				throw new Error("ERROR")
+				throw Helper.setError(`El correo ${email} ya esta registrado`, 409); 
 			}
 
 			//* Create a random verification token
