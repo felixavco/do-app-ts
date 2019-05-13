@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import cors from 'cors';
 import morgan from 'morgan';
+import passportJWT from './passportJWT';
 
 //* Routes imports
 import userRoutes from '../routes/userRoutes';
@@ -29,7 +30,7 @@ class Server {
 		this.app.use(express.urlencoded({ extended: false }));
 		this.app.use(express.json());
     this.app.use(passport.initialize());
-    // TODO require('./config/passport')(passport);
+    passportJWT(passport);
 		mongoose.set('useFindAndModify', false);
 	}
 

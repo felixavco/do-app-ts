@@ -1,16 +1,18 @@
 import { Router } from 'express';
+import UserController from '../controllers/UserController';
+import { registerValidation } from '../validations/UserValidation'
 
-class UserRoutes { 
+class UserRoutes extends UserController { 
   private router: Router;
 
   constructor() {
-    // super();
+    super();
     this.router = Router();
 		this.routes();
   }
 
   private routes(): void {
-		this.router.get('/', (req, res) => res.send("All Users :)"));
+		this.router.post('/register', registerValidation, this.registerController);
 	}
 
 	public getRouter() {

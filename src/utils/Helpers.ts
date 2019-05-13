@@ -50,6 +50,36 @@ class Helpers {
 		);
 		return UTC_Time;
 	}
+
+		/**
+    * Name: is_Empty,
+    * Description: Evaluates if an element is empty, returns boolean value
+    */
+	 public isEmpty(value: any): boolean {
+		return (
+			value === undefined ||
+			value === null ||
+			(typeof value === 'object' && Object.keys(value).length === 0) ||
+			(typeof value === 'string' && value.trim().length === 0)
+		);
+  }
+  
+  /**
+    * Name: is_Empty (static method),
+    * Description: Evaluates if an element is empty, returns boolean value
+    */
+	public static isEmpty(value: any): boolean {
+		return (
+			value === undefined ||
+			value === null ||
+			(typeof value === 'object' && Object.keys(value).length === 0) ||
+			(typeof value === 'string' && value.trim().length === 0)
+		);
+	}
 }
 
 export default Helpers;
+
+
+
+
