@@ -17,7 +17,7 @@ class UserController extends Helpers {
 
 	/**
    * @Name registerController
-   * @Path /api/user/register POST Public
+   * @Path /api/user/register POST //*Public
    * @Description Register new user with super admin rights, sends a confirmation email and returns jwt token 
    */
 	public registerController = async (req: Request, res: Response): Promise<any> => {
@@ -91,7 +91,7 @@ class UserController extends Helpers {
 
 	/**
    * @Name loginController
-   * @Path /api/user/login POST Public
+   * @Path /api/user/login GET //*Public
    * @Description Authentices user and returns a web token 
    */
 	public loginController = async (req: Request, res: Response): Promise<any> => {
@@ -136,7 +136,7 @@ class UserController extends Helpers {
 
 	/**
    * @Name verificationController
-   * @Path /api/user/verification/:token GET Public
+   * @Path /api/user/verification/:token GET //*Public
    * @Description Checks if the token matches with the user verification token stored in the DB
    */
 	public verificationController = async (req: Request, res: Response): Promise<any> => {
@@ -177,8 +177,41 @@ class UserController extends Helpers {
 					});
 				});
 			} else {
-				res.status(200).json({ succsess: "true" });
+				res.status(200).json({ succsess: 'true' });
 			}
+		} catch (error) {
+			res.status(error.status || 500).json(error);
+		}
+	};
+
+	/**
+   * @Name sendTokenController
+   * @Path /api/user/send-token GET //!Protected
+   * @Description Sends a new verification token, this act
+   */
+	public sendTokenController = async (req: Request, res: Response): Promise<any> => {
+		try {
+			const { _id } = req.user;
+			//* Create a new random verification token
+			const verificationToken = await crypto.randomBytes(32).toString('hex');
+			//* Set expiration to verification token
+			const expVerificationToken = Date.now() + 3600000; //* Token will expire in 1 Hour
+
+			const updatedTokenInfo = {
+				verificationToken,
+				expVerificationToken
+			};
+
+			const user: any = await User.findByIdAndUpdate(_id, updatedTokenInfo, { new: true });
+
+			//* Message Data to send to verification email
+			const { firstName, lastName, email, verificationToken: token } = user;
+			const messageData = { firstName, lastName, email, token };
+
+			//TODO Pending implement send mail functionality
+			console.log(messageData);
+
+			res.status(200).json({ message: 'verification token sent' });
 		} catch (error) {
 			res.status(error.status || 500).json(error);
 		}

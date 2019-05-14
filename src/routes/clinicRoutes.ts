@@ -1,16 +1,24 @@
 import { Router } from 'express';
+import passport from 'passport'
+import ClinicController from '../controllers/ClinicController';
+import { createClinic } from '../validations/clinicValidation';
 
-class ClinicRoutes { 
+
+class ClinicRoutes extends ClinicController { 
   private router: Router;
-
+  private protected: any;
+  
   constructor() {
-    // super();
+    super();
     this.router = Router();
-		this.routes();
+    this.routes();
+		this.protected = passport.authenticate('jwt', { session: false });
+    
   }
 
   private routes(): void {
-		this.router.get('/', (req, res) => res.send("Clinic Routes "));
+    this.router.get('/profile', this.createClinicController);
+		this.router.post('/profile', this.protected, createClinic, this.createClinicController);
 	}
 
 	public getRouter() {

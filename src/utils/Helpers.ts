@@ -76,6 +76,42 @@ class Helpers {
 			(typeof value === 'string' && value.trim().length === 0)
 		);
 	}
+
+	/**
+    * Name: isDomain,
+    * Description: Evaluates if a string is valid domain name, returns boolean value
+    */
+	public isDomain(domain: string): boolean {
+		const domain_regex = /(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
+		return domain_regex.test(domain);
+	}
+
+	/**
+    * Name: isDomain (static method),
+    * Description: Evaluates if a string is valid domain name, returns boolean value
+    */
+	 public static isDomain(domain: string): boolean {
+		const domain_regex = /(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
+		return domain_regex.test(domain);
+	}
+
+	/**
+    * Name: isSlug,
+    * Description: Evaluates if a string is a valid slug no spaces only alpha numeric and dashes are allowed, returns boolean value
+    */
+	 public isSlug(url: string): boolean {
+		const url_regex = /^[a-zA-Z0-9-_]+$/;
+		return url_regex.test(url);
+	}
+
+		/**
+    * Name: isSlug (static method),
+    * Description: Evaluates if a string is a valid slug no spaces only alpha numeric and dashes are allowed, returns boolean value
+    */
+	 public static isSlug(url: string): boolean {
+		const url_regex = /^[a-zA-Z0-9-_]+$/;
+		return url_regex.test(url);
+	}
 }
 
 export default Helpers;

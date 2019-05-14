@@ -15,3 +15,13 @@ export interface IRegister {
 	password2?: string;
 	email?: string;
 }
+
+export interface IClinic {
+	name?: string;
+	url?: string;
+	domain?: string;
+	logo?: string;
+	password?: string;
+	password2?: string;
+	email?: string;
+}
