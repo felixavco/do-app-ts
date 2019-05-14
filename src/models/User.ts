@@ -5,7 +5,7 @@ import Helpers from '../utils/Helpers';
 
 const UserSchema = new Schema({
 	//* Personal Information
-	refix: { type: String }, 
+	refix: { type: String },
 	firstName: { type: String, required: true },
 	middleName: { type: String },
 	lastName: { type: String, required: true },
@@ -14,8 +14,8 @@ const UserSchema = new Schema({
 	userName: { type: String },
 	password: { type: String, required: true },
 	dob: { type: Date },
-	gender: { type: String, },
-	avatar: { type: String },
+	gender: { type: String },
+	avatar: { type: String, default: 'avatars/default.jpg' },
 	//* Contact Information
 	phones: [
 		{
@@ -31,15 +31,15 @@ const UserSchema = new Schema({
 	],
 	//* Education and Experience Information
 	speciality: { type: String },
-	other_specialities: [ 
+	other_specialities: [
 		{
-			sp_id: {type: String, default: 'sid_' + uuid() },
-		  speciality: { type: String } 
+			sp_id: { type: String, default: 'sid_' + uuid() },
+			speciality: { type: String }
 		}
 	],
 	education: [
 		{
-			edu_id: {type: String, default: 'edu_pid_' + uuid() },
+			edu_id: { type: String, default: 'edu_pid_' + uuid() },
 			institution: { type: String, required: true },
 			city: { type: String, required: true },
 			country: { type: String, required: true },
@@ -52,7 +52,7 @@ const UserSchema = new Schema({
 	],
 	experience: [
 		{
-			exp_id: {type: String, default: 'exp_pid_' + uuid() },
+			exp_id: { type: String, default: 'exp_pid_' + uuid() },
 			institution: { type: String, required: true },
 			city: { type: String, required: true },
 			country: { type: String, required: true },
@@ -65,11 +65,16 @@ const UserSchema = new Schema({
 		}
 	],
 	//* Account Information
-	clinic: { type: Schema.Types.ObjectId, ref: 'clinic'},
+	clinic: { type: Schema.Types.ObjectId, ref: 'clinic' },
 	role: { type: String, required: true, default: 'doctor' }, // * options: "doctor", "nourse", "assistance", "admin"
 	access_level: { type: String, required: true, default: 'basic' }, // * options: "basic", "doctor", "accountant", "full-access"
-	is_active: { type: Boolean, default: true },
-	creation_date: { type: Date, default: Helpers.getUTCTime() }
+	active: { type: Boolean, default: true },
+	verified: {type: Boolean, default: false },
+	resetPwdToken: { type: String },
+	expResPwdToken: { type: Date },
+	verificationToken: { type: String },
+	expVerificationToken: { type: Date },
+	creation_date: { type: Date, default: Helpers.getUTCTime() },
 });
 
 const User = mongoose.model('user', UserSchema);

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import UserController from '../controllers/UserController';
-import { registerValidation } from '../validations/UserValidation'
+import { registerValidation, loginValidation } from '../validations/UserValidation'
 
 class UserRoutes extends UserController { 
   private router: Router;
@@ -13,6 +13,8 @@ class UserRoutes extends UserController {
 
   private routes(): void {
 		this.router.post('/register', registerValidation, this.registerController);
+		this.router.post('/login', loginValidation, this.loginController);
+		this.router.get('/verification/:token', this.verificationController);
 	}
 
 	public getRouter() {

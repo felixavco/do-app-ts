@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Helper from '../utils/Helpers';
+import Helpers from '../utils/Helpers';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -8,24 +8,26 @@ if (process.env.NODE_ENV !== 'production') {
 	require('dotenv').config();
 }
 
-class UserController {
+class UserController extends Helpers {
 	private SECRET: string = process.env.SECRET || '';
+
+	constructor() {
+		super();
+	}
 
 	/**
    * @Name registerController
    * @Path /api/user/register POST Public
-   * @Description Register new user and returns jwt token 
+   * @Description Register new user with super admin rights, sends a confirmation email and returns jwt token 
    */
-	public async registerController(req: Request, res: Response): Promise<any> {
+	public registerController = async (req: Request, res: Response): Promise<any> => {
 		try {
 			const { firstName, middleName, lastName, lastName2, email, password } = req.body;
-
-			console.log("this is this ", this)
 
 			//* Checking if user exists
 			const user = await User.findOne({ email });
 			if (user) {
-				throw Helper.setError(`El correo ${email} ya esta registrado`, 409); 
+				throw this.setError(`El correo ${email} ya esta registrado`, 409);
 			}
 
 			//* Create a random verification token
@@ -34,39 +36,153 @@ class UserController {
 			const expVerificationToken = Date.now() + 3600000; //* Token will expire in 1 Hour
 
 			// * if the user does not exist, the user is registered
-			const newUser = {
+			const newUserData = {
 				firstName,
 				middleName,
 				lastName,
 				lastName2,
 				email,
 				password,
-				userName: email.split('@')[0], 
-				access_level: "full-access"
+				userName: email.split('@')[0],
+				access_level: 'full-access',
+				verificationToken,
+				expVerificationToken
 			};
 
 			//* Message Data to send to verification email
-			const messageData = { firstName, email, token: verificationToken };
+			const messageData = { firstName, lastName, email, token: verificationToken };
 
 			//* Encrypt user password
 			bcrypt.genSalt(12, (err, salt) => {
-				bcrypt.hash(newUser.password, salt, async (err, hash) => {
+				if (err) throw err;
+				bcrypt.hash(newUserData.password, salt, async (err, hash) => {
 					if (err) throw err;
-					newUser.password = hash;
-					const createdUser = await new User(newUser).save();
+					newUserData.password = hash;
+					const newUser = await new User(newUserData).save();
 
-					//TODO Send Verification Token
+					//TODO Send Verification Token PENDING.... send verification message
 					console.log(messageData);
-					//TODO PENDING.... send verification message
 
-					//TODO Pending send jwt token
-					res.status(200).json(createdUser);
+					//* Prepare data to be via token
+					const payload = {
+						_id: newUser._id,
+						firstName: newUser.firstName,
+						lastName: newUser.lastName,
+						email: newUser.email,
+						role: newUser.role,
+						access_level: newUser.access_level,
+						active: newUser.active,
+						verified: newUser.verified,
+						avatar: newUser.avatar
+					};
+					//* send jwt token
+					jwt.sign(payload, this.SECRET, { expiresIn: '1d' }, (err, token) => {
+						res.status(200).json({
+							success: true,
+							token: `Bearer ${token}`
+						});
+					});
 				});
 			});
 		} catch (error) {
-			res.status(error.status || 500).json(error.message);
+			res.status(error.status || 500).json(error);
 		}
-	}
+	};
+
+	/**
+   * @Name loginController
+   * @Path /api/user/login POST Public
+   * @Description Authentices user and returns a web token 
+   */
+	public loginController = async (req: Request, res: Response): Promise<any> => {
+		try {
+			const { email: reqEmail, password } = req.body;
+			//* Find user
+			const user = await User.findOne({ email: reqEmail });
+			if (!user) {
+				throw this.setError('No se encontro el usuario', 404, 'email');
+			}
+
+			const isMatch = await bcrypt.compare(password, user.password);
+
+			if (!isMatch) {
+				throw this.setError('La contraseña es incorrecta', 401, 'password');
+			}
+
+			const { _id, firstName, lastName, role, access_level, active, verified, avatar } = user;
+
+			const payload = {
+				_id,
+				firstName,
+				lastName,
+				role,
+				access_level,
+				active,
+				verified,
+				avatar
+			};
+
+			//* send jwt token
+			jwt.sign(payload, this.SECRET, { expiresIn: '1d' }, (err, token) => {
+				res.status(200).json({
+					success: true,
+					token: `Bearer ${token}`
+				});
+			});
+		} catch (error) {
+			res.status(error.status || 500).json(error);
+		}
+	};
+
+	/**
+   * @Name verificationController
+   * @Path /api/user/verification/:token GET Public
+   * @Description Checks if the token matches with the user verification token stored in the DB
+   */
+	public verificationController = async (req: Request, res: Response): Promise<any> => {
+		try {
+			const { token } = req.params;
+			const auth = parseInt(req.query.auth);
+
+			const user = await User.findOne({
+				verificationToken: token,
+				expVerificationToken: { $gt: Date.now() } //* checks if the token is expired
+			});
+
+			if (!user) {
+				throw this.setError('Invalid token or token expired', 401, 'verification_token');
+			}
+
+			const updatedUser: any = await User.findByIdAndUpdate(user._id, { verified: true }, { new: true });
+
+			if (auth) {
+				const { _id, firstName, lastName, role, access_level, active, verified, avatar } = updatedUser;
+
+				const payload = {
+					_id,
+					firstName,
+					lastName,
+					role,
+					access_level,
+					active,
+					verified,
+					avatar
+				};
+
+				// //* send jwt token
+				jwt.sign(payload, this.SECRET, { expiresIn: '1d' }, (err, token) => {
+					res.status(200).json({
+						success: true,
+						token: `Bearer ${token}`
+					});
+				});
+			} else {
+				res.status(200).json({ succsess: "true" });
+			}
+		} catch (error) {
+			res.status(error.status || 500).json(error);
+		}
+	};
 }
 
 export default UserController;
