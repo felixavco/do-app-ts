@@ -65,15 +65,12 @@ const UserSchema = new Schema({
 		}
 	],
 	//* Account Information
-	clinic: { type: Schema.Types.ObjectId, ref: 'clinic' },
-	role: { type: String, required: true, default: 'doctor' }, // * options: "doctor", "nourse", "assistance", "admin"
+	account: { type: Schema.Types.ObjectId, ref: 'account' },
+	role: { type: String, required: true }, // * options: "doctor", "nourse", "assistance", "admin"
 	access_level: { type: String, required: true, default: 'basic' }, // * options: "basic", "doctor", "accountant", "full-access"
 	active: { type: Boolean, default: true },
-	verified: {type: Boolean, default: false },
 	resetPwdToken: { type: String },
 	expResPwdToken: { type: Date },
-	verificationToken: { type: String },
-	expVerificationToken: { type: Date },
 	creation_date: { type: Date, default: Helpers.getUTCTime() },
 });
 

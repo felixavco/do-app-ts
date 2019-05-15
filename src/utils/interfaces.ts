@@ -14,6 +14,8 @@ export interface IRegister {
 	password?: string;
 	password2?: string;
 	email?: string;
+	account_type?: string;
+	role?: string;
 }
 
 export interface IClinic {

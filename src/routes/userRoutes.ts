@@ -1,20 +1,20 @@
 import { Router } from 'express';
-import passport from 'passport'
+import passport from 'passport';
 import UserController from '../controllers/UserController';
-import { registerValidation, loginValidation } from '../validations/UserValidation'
+import { registerValidation, loginValidation } from '../validations/UserValidation';
 
-class UserRoutes extends UserController { 
+class UserRoutes extends UserController {
 	private router: Router;
 	private protected: any;
 
-  constructor() {
-    super();
-		this.router = Router();
+	constructor() {
+		super();
 		this.protected = passport.authenticate('jwt', { session: false });
+		this.router = Router();
 		this.routes();
-  }
+	}
 
-  private routes(): void {
+	private routes(): void {
 		this.router.post('/register', registerValidation, this.registerController);
 		this.router.post('/login', loginValidation, this.loginController);
 		this.router.get('/verification/:token', this.verificationController);

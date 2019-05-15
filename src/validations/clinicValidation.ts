@@ -3,7 +3,7 @@ import Validator from 'validator';
 import Helper from '../utils/Helpers';
 import { IClinic } from '../utils/interfaces';
 
-export const createClinic = (req: Request, res: Response, next: NextFunction) => {
+export const createClinicValidation = (req: Request, res: Response, next: NextFunction) => {
 	let errors: IClinic = {};
 	const { name, url, domain, logo } = req.body;
 

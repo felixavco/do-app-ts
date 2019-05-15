@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Helpers from '../utils/Helpers';
 import User from '../models/User';
-import Clinic from '../models/Clinic';
+import Account from '../models/Account';
 
 class ClinicController extends Helpers {
   constructor(){

@@ -7,7 +7,7 @@ import passportJWT from './passportJWT';
 
 //* Routes imports
 import userRoutes from '../routes/userRoutes';
-import clinicRoutes from '../routes/clinicRoutes';
+import accountRoutes from '../routes/accountRoutes';
 import adminRoutes from '../routes/adminRoutes';
 import patientRoutes from '../routes/patientRoutes';
 
@@ -36,7 +36,7 @@ class Server {
 
 	private routes(): void {
 		this.app.use('/api/user', userRoutes);
-		this.app.use('/api/clinic', clinicRoutes);
+		this.app.use('/api/account', accountRoutes);
 		this.app.use('/api/clinic-admin', adminRoutes);
 		this.app.use('/api/patient', patientRoutes);
 	}

@@ -3,12 +3,13 @@ import uuid from 'uuid/v4';
 const Schema = mongoose.Schema;
 import Helpers from '../utils/Helpers';
 
-const ClinicSchema = new Schema({
+const AccountSchema = new Schema({
   //* Basic Information
-  name: { type: String, required: true, unique: true },
-  url: { type: String, required: true, unique: true },
+  name: { type: String, unique: true },
+  url: { type: String, unique: true },
   domain: { type: String, unique: true },
 	logo: { type: String },
+	account_type: { type: String },
 	locations: [
 		{
       address_id: {type: String, default: 'add_pid_' + uuid() },
@@ -41,11 +42,11 @@ const ClinicSchema = new Schema({
     whatsapp: { type: String },
     website: { type: String },
 	},
-  //* Primary Admin information
+	//* Primary Admin information
+	admin_name: { type: String, required: true },
 	admin_email: { type: String, required: true, unique: true },
 	is_admin_email_verified: { type: Boolean, default: false },
-  admin_password: { type: String, required: true },
-  contact_phone: { type: String, required: true },
+  contact_phone: { type: String },
   security_question: { type: String },
   security_answer: { type: String },
   security_question2: { type: String },
@@ -54,6 +55,8 @@ const ClinicSchema = new Schema({
 	is_domain_verified: { type: Boolean, default: false },
 	is_in_trial: { type: Boolean, default: false },
 	is_trial_elegible: { type: Boolean, default: true },
+	verificationToken: { type: String },
+	expVerificationToken: { type: Date },
   creation_date: { type: Date, default: Helpers.getUTCTime() }, 
   //* Reporting information
   reports: [
@@ -68,6 +71,6 @@ const ClinicSchema = new Schema({
   total_nourses: { type: Number, required: true }
 });
 
-const Clinic = mongoose.model('clinic', ClinicSchema);
+const Account = mongoose.model('account', AccountSchema);
 
-export default Clinic;
+export default Account;

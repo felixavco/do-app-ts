@@ -5,7 +5,7 @@ import { IRegister } from '../utils/interfaces';
 
 export const registerValidation = (req: Request, res: Response, next: NextFunction) => {
 	let errors: IRegister = {};
-	const { firstName, middleName, lastName, lastName2, email, password, password2 } = req.body;
+	const { firstName, middleName, lastName, lastName2, email, password, password2, account_type, role } = req.body;
 
 	//* First Name Validation
 	if (Helper.isEmpty(firstName)) {
@@ -61,6 +61,14 @@ export const registerValidation = (req: Request, res: Response, next: NextFuncti
 		errors.password2 = 'Confirme la contraseña';
 	} else if (!Validator.equals(password.trim(), password2.trim())) {
 		errors.password2 = "Las contraseñas no coinciden";
+	}
+
+	if(Helper.isEmpty(account_type)) {
+		errors.account_type = 'Seleccione un el tipo de cuenta';
+	}
+	
+	if(Helper.isEmpty(role)) {
+		errors.role = 'Seleccione un Rol';
 	}
 
 	if (!Helper.isEmpty(errors)) {

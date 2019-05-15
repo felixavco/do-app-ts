@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User';
+import Account from '../models/Account';
 if (process.env.NODE_ENV !== 'production') {
 	require('dotenv').config();
 }
@@ -22,10 +23,11 @@ class UserController extends Helpers {
    */
 	public registerController = async (req: Request, res: Response): Promise<any> => {
 		try {
-			const { firstName, middleName, lastName, lastName2, email, password } = req.body;
+			const { firstName, middleName, lastName, lastName2, email, password, account_type, role } = req.body;
 
 			//* Checking if user exists
 			const user = await User.findOne({ email });
+
 			if (user) {
 				throw this.setError(`El correo ${email} ya esta registrado`, 409);
 			}
@@ -35,8 +37,21 @@ class UserController extends Helpers {
 			//* Set expiration to verification token
 			const expVerificationToken = Date.now() + 3600000; //* Token will expire in 1 Hour
 
+			//* Links new user with an account
+			const newAccountData = {
+				admin_name: firstName + lastName,
+				admin_email: email,
+				account_type,
+				verificationToken,
+				expVerificationToken
+			};
+
+			//* Saves the new account and returns the new account object
+			const newAccount = await new Account(newAccountData).save();
+
 			// * if the user does not exist, the user is registered
 			const newUserData = {
+				role,
 				firstName,
 				middleName,
 				lastName,
@@ -45,8 +60,7 @@ class UserController extends Helpers {
 				password,
 				userName: email.split('@')[0],
 				access_level: 'full-access',
-				verificationToken,
-				expVerificationToken
+				account: newAccount._id
 			};
 
 			//* Message Data to send to verification email
@@ -72,8 +86,8 @@ class UserController extends Helpers {
 						role: newUser.role,
 						access_level: newUser.access_level,
 						active: newUser.active,
-						verified: newUser.verified,
-						avatar: newUser.avatar
+						avatar: newUser.avatar,
+						account: newUser.account
 					};
 					//* send jwt token
 					jwt.sign(payload, this.SECRET, { expiresIn: '1d' }, (err, token) => {
@@ -109,7 +123,7 @@ class UserController extends Helpers {
 				throw this.setError('La contraseña es incorrecta', 401, 'password');
 			}
 
-			const { _id, firstName, lastName, role, access_level, active, verified, avatar } = user;
+			const { _id, firstName, lastName, role, access_level, active, avatar, account } = user;
 
 			const payload = {
 				_id,
@@ -118,8 +132,8 @@ class UserController extends Helpers {
 				role,
 				access_level,
 				active,
-				verified,
-				avatar
+				avatar,
+				account
 			};
 
 			//* send jwt token
@@ -142,43 +156,46 @@ class UserController extends Helpers {
 	public verificationController = async (req: Request, res: Response): Promise<any> => {
 		try {
 			const { token } = req.params;
-			const auth = parseInt(req.query.auth);
 
-			const user = await User.findOne({
+			const userAccount = await Account.findOne({
 				verificationToken: token,
 				expVerificationToken: { $gt: Date.now() } //* checks if the token is expired
 			});
 
-			if (!user) {
+			if (!userAccount) {
 				throw this.setError('Invalid token or token expired', 401, 'verification_token');
 			}
 
-			const updatedUser: any = await User.findByIdAndUpdate(user._id, { verified: true }, { new: true });
+			const updatedAccount: any = await Account.findByIdAndUpdate(
+				userAccount._id,
+				{ is_admin_email_verified: true },
+				{ new: true }
+			);
 
-			if (auth) {
-				const { _id, firstName, lastName, role, access_level, active, verified, avatar } = updatedUser;
+			//* Find the admin user asociated with the account
+			const user: any = await User.findOne({ account: updatedAccount._id });
 
-				const payload = {
-					_id,
-					firstName,
-					lastName,
-					role,
-					access_level,
-					active,
-					verified,
-					avatar
-				};
+			const { _id, firstName, lastName, role, access_level, active, verified, avatar, account } = user;
 
-				// //* send jwt token
-				jwt.sign(payload, this.SECRET, { expiresIn: '1d' }, (err, token) => {
-					res.status(200).json({
-						success: true,
-						token: `Bearer ${token}`
-					});
+			const payload = {
+				_id,
+				firstName,
+				lastName,
+				role,
+				access_level,
+				active,
+				verified,
+				avatar,
+				account
+			};
+
+			// //* send jwt token
+			jwt.sign(payload, this.SECRET, { expiresIn: '1d' }, (err, token) => {
+				res.status(200).json({
+					success: true,
+					token: `Bearer ${token}`
 				});
-			} else {
-				res.status(200).json({ succsess: 'true' });
-			}
+			});
 		} catch (error) {
 			res.status(error.status || 500).json(error);
 		}
@@ -191,7 +208,7 @@ class UserController extends Helpers {
    */
 	public sendTokenController = async (req: Request, res: Response): Promise<any> => {
 		try {
-			const { _id } = req.user;
+			const _id = req.user.account;
 			//* Create a new random verification token
 			const verificationToken = await crypto.randomBytes(32).toString('hex');
 			//* Set expiration to verification token
@@ -202,11 +219,11 @@ class UserController extends Helpers {
 				expVerificationToken
 			};
 
-			const user: any = await User.findByIdAndUpdate(_id, updatedTokenInfo, { new: true });
+			const account: any = await Account.findByIdAndUpdate(_id, updatedTokenInfo, { new: true });
 
 			//* Message Data to send to verification email
-			const { firstName, lastName, email, verificationToken: token } = user;
-			const messageData = { firstName, lastName, email, token };
+			const { admin_name, admin_email, verificationToken: token } = account;
+			const messageData = { admin_name, admin_email, token };
 
 			//TODO Pending implement send mail functionality
 			console.log(messageData);
