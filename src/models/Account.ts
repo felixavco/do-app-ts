@@ -58,17 +58,18 @@ const AccountSchema = new Schema({
 	verificationToken: { type: String },
 	expVerificationToken: { type: Date },
   creation_date: { type: Date, default: Helpers.getUTCTime() }, 
-  //* Reporting information
-  reports: [
-    {
-      event_name: { type: String, required: true }, 
-      user: { type: String, required: true },
-      user_id: { type: Schema.Types.ObjectId, ref: 'user', required: true }, 
-      date: { type: Date, default: Helpers.getUTCTime() } 
-    }
-  ], 
-  total_doctors: { type: Number, required: true }, 
-  total_nourses: { type: Number, required: true }
+	//* Reporting information
+	//TODO **********************
+  // reports: [
+  //   {
+  //     event_name: { type: String, required: true }, 
+  //     user: { type: String, required: true },
+  //     user_id: { type: Schema.Types.ObjectId, ref: 'user', required: true }, 
+  //     date: { type: Date, default: Helpers.getUTCTime() } 
+  //   }
+  // ], 
+  // total_doctors: { type: Number, required: true }, 
+  // total_nourses: { type: Number, required: true }
 });
 
 const Account = mongoose.model('account', AccountSchema);

@@ -39,7 +39,7 @@ class UserController extends Helpers {
 
 			//* Links new user with an account
 			const newAccountData = {
-				admin_name: firstName + lastName,
+				admin_name: firstName + ' ' + lastName,
 				admin_email: email,
 				account_type,
 				verificationToken,
