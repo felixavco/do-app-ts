@@ -9,6 +9,7 @@ const AccountSchema = new Schema({
 	domain: { type: String, unique: true },
 	logo: { type: String },
 	account_type: { type: String },
+	description: { type: String },
 	address:
 	{
 		address: { type: String, required: true },

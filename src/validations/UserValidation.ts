@@ -141,8 +141,6 @@ export const createProfileValidation = (req: Request, res: Response, next: NextF
 		return res.status(400).json(errors);
 	}
 
-
-
 	next();
 
 }

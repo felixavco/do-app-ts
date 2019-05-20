@@ -25,7 +25,9 @@ export interface IClinic {
 	logo?: string;
 	password?: string;
 	password2?: string;
-	email?: string;
+	address?: string; 
+	phones?: string;
+	emails?: string;
 }
 
 export interface IProfileCreation {
