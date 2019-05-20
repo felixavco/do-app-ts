@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Validator from 'validator';
 import Helper from '../utils/Helpers';
-import { IRegister } from '../utils/interfaces';
+import { IRegister, IProfileCreation } from '../utils/interfaces';
 
 export const registerValidation = (req: Request, res: Response, next: NextFunction) => {
 	let errors: IRegister = {};
@@ -63,11 +63,11 @@ export const registerValidation = (req: Request, res: Response, next: NextFuncti
 		errors.password2 = "Las contraseñas no coinciden";
 	}
 
-	if(Helper.isEmpty(account_type)) {
+	if (Helper.isEmpty(account_type)) {
 		errors.account_type = 'Seleccione un el tipo de cuenta';
 	}
-	
-	if(Helper.isEmpty(role)) {
+
+	if (Helper.isEmpty(role)) {
 		errors.role = 'Seleccione un Rol';
 	}
 
@@ -83,7 +83,7 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
 	const { email, password } = req.body;
 
 	if (Helper.isEmpty(email)) {
-		errors.lastName = 'Ingrese su Email';
+		errors.email = 'Ingrese su Email';
 	} else if (!Validator.isEmail(email.trim())) {
 		errors.email = 'Hay un problema con el usuario o la contraseña.';
 	}
@@ -101,3 +101,48 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
 
 	next();
 };
+
+export const createProfileValidation = (req: Request, res: Response, next: NextFunction) => {
+	let errors: IProfileCreation = {};
+
+	const { JVPM, prefix, dob, phones, emails, speciality } = req.body;
+
+	if (Helper.isEmpty(prefix)) {
+		errors.prefix = 'Seleccione una opcion';
+	}
+
+	if (Helper.isEmpty(JVPM)) {
+		errors.JVPM = 'Este campo es obligatorio';
+	}
+
+	if (Helper.isEmpty(dob)) {
+		errors.dob = 'Ingrese su fecha de nacimiento';
+	}
+
+	if (Helper.isEmpty(phones)) {
+		errors.phones = "Ingrese un telefono de contacto";
+	}
+
+	if (!Helper.isEmpty(emails)) {
+		emails.forEach(({ email }, index) => {
+			if (!Validator.isEmail(email)) {
+				errors.emails += `El formato del correo en la posicion ${index + 1} es incorrecto. `;
+			}
+		});
+	} else {
+		errors.emails = "Ingrese un correo electronico de contacto";
+	}
+
+	if (Helper.isEmpty(speciality)) {
+		errors.speciality = 'Seleccione una especialidad';
+	}
+
+	if (!Helper.isEmpty(errors)) {
+		return res.status(400).json(errors);
+	}
+
+
+
+	next();
+
+}

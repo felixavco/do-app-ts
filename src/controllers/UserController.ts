@@ -17,11 +17,11 @@ class UserController extends Helpers {
 	}
 
 	/**
-   * @Name registerController
-   * @Path /api/user/register POST //*Public
-   * @Description Register new user with super admin rights, sends a confirmation email and returns jwt token 
-   */
-	public registerController = async (req: Request, res: Response): Promise<any> => {
+	 * Name: registerController
+	 * Path: /api/user/register //*Public POST 
+	 * Description: Register new user with super admin rights, sends a confirmation email and returns jwt token 
+	 */
+	public register = async (req: Request, res: Response): Promise<any> => {
 		try {
 			const { firstName, middleName, lastName, lastName2, email, password, account_type, role } = req.body;
 
@@ -58,7 +58,8 @@ class UserController extends Helpers {
 				lastName2,
 				email,
 				password,
-				userName: email.split('@')[0],
+				public_serchable: true,
+				userName: email.split('')[0],
 				access_level: 'full-access',
 				account: newAccount._id
 			};
@@ -104,11 +105,11 @@ class UserController extends Helpers {
 	};
 
 	/**
-   * @Name loginController
-   * @Path /api/user/login GET //*Public
-   * @Description Authentices user and returns a web token 
-   */
-	public loginController = async (req: Request, res: Response): Promise<any> => {
+	 * Name: loginController
+	 * Path: /api/user/login  //*Public GET
+	 * Description: Authentices user and returns a web token 
+	 */
+	public login = async (req: Request, res: Response): Promise<any> => {
 		try {
 			const { email: reqEmail, password } = req.body;
 			//* Find user
@@ -149,11 +150,11 @@ class UserController extends Helpers {
 	};
 
 	/**
-   * @Name verificationController
-   * @Path /api/user/verification/:token GET //*Public
-   * @Description Checks if the token matches with the user verification token stored in the DB
-   */
-	public verificationController = async (req: Request, res: Response): Promise<any> => {
+	 * Name: verificationController
+	 * Path: /api/user/verification/:token //*Public GET
+	 * Description: Checks if the token matches with the user verification token stored in the DB
+	 */
+	public verification = async (req: Request, res: Response): Promise<any> => {
 		try {
 			const { token } = req.params;
 
@@ -202,11 +203,11 @@ class UserController extends Helpers {
 	};
 
 	/**
-   * @Name sendTokenController
-   * @Path /api/user/send-token GET //!Protected
-   * @Description Sends a new verification token, this act
-   */
-	public sendTokenController = async (req: Request, res: Response): Promise<any> => {
+	 * Name: sendTokenController
+	 * Path: /api/user/send-token //!Protected GET
+	 * Description: Sends a new verification token, this act
+	 */
+	public sendToken = async (req: Request, res: Response): Promise<any> => {
 		try {
 			const _id = req.user.account;
 			//* Create a new random verification token
@@ -233,6 +234,25 @@ class UserController extends Helpers {
 			res.status(error.status || 500).json(error);
 		}
 	};
+
+	/**
+	 * Name: createProfile
+	 * Path: /api/user/profile  //!Protected POST
+	 * Description: Creates  or Edit the user profile
+	 */
+	public userProfile = async (req: Request, res: Response): Promise<any> => {
+		try {
+			const { _id } = req.user;
+
+			const profileData = { ...req.body }
+
+			const profile = await User.findByIdAndUpdate(_id, profileData, { new: true })
+
+			res.status(200).json(profile);
+		} catch (error) {
+			res.status(500).json(error);
+		}
+	}
 }
 
 export default UserController;

@@ -13,7 +13,7 @@ class ClinicController extends Helpers {
    * @Path /api/user/register POST //!Protected
    * @Description Creates clinic profile and set clinic ID to the admin user 
    */
-  public createClinicController = async (req: Request, res: Response): Promise<any> => {
+  public createAccount = async (req: Request, res: Response): Promise<any> => {
     res.status(200).json({msg: "TODO OK"})
   }
 

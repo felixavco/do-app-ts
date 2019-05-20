@@ -27,3 +27,12 @@ export interface IClinic {
 	password2?: string;
 	email?: string;
 }
+
+export interface IProfileCreation {
+	prefix?: string;
+	dob?: string;
+	phones?: string;
+	emails?: string;
+	speciality?: string;
+	JVPM?: string;
+}
