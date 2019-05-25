@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import UserController from '../controllers/UserController';
-import { registerValidation, loginValidation, createProfileValidation } from '../validations/UserValidation';
+import { register, login, createProfile, checkEmail } from '../validations/UserValidation';
 
 class UserRoutes extends UserController {
 	private router: Router;
@@ -15,11 +15,13 @@ class UserRoutes extends UserController {
 	}
 
 	private routes(): void {
-		this.router.post('/register', registerValidation, this.register);
-		this.router.post('/login', loginValidation, this.login);
+	//* this.router.method(Route path, Validation?, Controller)
+		this.router.post('/register', register, this.register);
+		this.router.post('/login', login, this.login);
+		this.router.post('/check-email', checkEmail, this.checkEmail);
 		this.router.get('/verification/:token', this.verification);
 		this.router.get('/send-token', this.protected, this.sendToken);
-		this.router.post('/profile', this.protected, createProfileValidation, this.userProfile);
+		this.router.post('/profile', this.protected, createProfile, this.userProfile);
 	}
 
 	public getRouter() {

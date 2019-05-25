@@ -17,7 +17,7 @@ class UserController extends Helpers {
 	}
 
 	/**
-	 * Name: registerController
+	 * Name: register
 	 * Path: /api/user/register //*Public POST 
 	 * Description: Register new user with super admin rights, sends a confirmation email and returns jwt token 
 	 */
@@ -105,8 +105,8 @@ class UserController extends Helpers {
 	};
 
 	/**
-	 * Name: loginController
-	 * Path: /api/user/login  //*Public GET
+	 * Name: login
+	 * Path: /api/user/login  //*Public POST
 	 * Description: Authentices user and returns a web token 
 	 */
 	public login = async (req: Request, res: Response): Promise<any> => {
@@ -148,6 +148,28 @@ class UserController extends Helpers {
 			res.status(error.status || 500).json(error);
 		}
 	};
+
+	/**
+	 * Name: checkEmail
+	 * Path: /api/user/check-email  //*Public POST
+	 * Description: Checks if email address is already registered
+	 */
+	public checkEmail = async (req: Request, res: Response): Promise<any> => {
+		try {
+			const { email } = req.body;
+			//* Checking if user exists
+			const user = await User.findOne({ email });
+
+			if (user) {
+				throw {checkEmail: `El correo ${email} ya esta registrado`};
+			} else {
+				res.status(200).json({ message: 'Email is correct and available'  })
+			}
+
+		} catch (error) {
+			res.status(409).json(error);
+		}
+	}
 
 	/**
 	 * Name: verificationController

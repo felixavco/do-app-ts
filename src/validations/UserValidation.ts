@@ -3,7 +3,7 @@ import Validator from 'validator';
 import Helper from '../utils/Helpers';
 import { IRegister, IProfileCreation } from '../utils/interfaces';
 
-export const registerValidation = (req: Request, res: Response, next: NextFunction) => {
+export const register = (req: Request, res: Response, next: NextFunction) => {
 	let errors: IRegister = {};
 	const { firstName, middleName, lastName, lastName2, email, password, password2, account_type, role } = req.body;
 
@@ -45,7 +45,7 @@ export const registerValidation = (req: Request, res: Response, next: NextFuncti
 
 	//* Email Validation
 	if (Helper.isEmpty(email)) {
-		errors.lastName = 'El correo electronico es requerido';
+		errors.email = 'El correo electronico es requerido';
 	} else if (!Validator.isEmail(email.trim())) {
 		errors.email = 'El formato del correo es incorrecto';
 	}
@@ -78,7 +78,7 @@ export const registerValidation = (req: Request, res: Response, next: NextFuncti
 	next();
 };
 
-export const loginValidation = (req: Request, res: Response, next: NextFunction) => {
+export const login = (req: Request, res: Response, next: NextFunction) => {
 	let errors: IRegister = {};
 	const { email, password } = req.body;
 
@@ -102,7 +102,7 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
 	next();
 };
 
-export const createProfileValidation = (req: Request, res: Response, next: NextFunction) => {
+export const createProfile = (req: Request, res: Response, next: NextFunction) => {
 	let errors: IProfileCreation = {};
 
 	const { JVPM, prefix, dob, phones, emails, speciality } = req.body;
@@ -143,4 +143,22 @@ export const createProfileValidation = (req: Request, res: Response, next: NextF
 
 	next();
 
+}
+
+export const checkEmail = (req: Request, res: Response, next: NextFunction) => {
+	const { email } = req.body;
+	let errors: IRegister = {};
+
+	//* Email Validation
+	if (Helper.isEmpty(email)) {
+		errors.email = 'El correo electronico es requerido (emailCheck)';
+	} else if (!Validator.isEmail(email.trim())) {
+		errors.email = 'El formato del correo es incorrecto (emailCheck)';
+	}
+
+	if (!Helper.isEmpty(errors)) {
+		return res.status(400).json(errors);
+	}
+
+	next();
 }
