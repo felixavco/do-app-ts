@@ -5,12 +5,12 @@ import Helpers from '../utils/Helpers';
 const UserSchema = new Schema({
 	//* Personal Information
 	prefix: { type: String },
-	firstName: { type: String, required: true },
+	firstName: { type: String },
 	middleName: { type: String },
-	lastName: { type: String, required: true },
+	lastName: { type: String,  },
 	lastName2: { type: String },
 	email: { type: String, required: true, unique: true },
-	userName: { type: String },
+	userName: { type: String, required: true },
 	password: { type: String, required: true },
 	dob: { type: Date },
 	gender: { type: String },
@@ -20,7 +20,7 @@ const UserSchema = new Schema({
 	//* Contact Information
 	phones: [
 		{
-			phone: { type: String, required: true }, 
+			phone: { type: String }, 
 			phone_type: { type: String, default: "phone" }
 		}
 	],
@@ -38,33 +38,33 @@ const UserSchema = new Schema({
 	],
 	education: [
 		{
-			institution: { type: String, required: true },
-			city: { type: String, required: true },
-			country: { type: String, required: true },
-			degree: { type: String, required: true },
+			institution: { type: String },
+			city: { type: String },
+			country: { type: String },
+			degree: { type: String },
 			speciality: { type: String },
-			from: { type: Date, required: true },
-			to: { type: Date, required: true },
+			from: { type: Date },
+			to: { type: Date },
 			description: { type: String }
 		}
 	],
 	experience: [
 		{
-			institution: { type: String, required: true },
-			city: { type: String, required: true },
-			country: { type: String, required: true },
-			title: { type: String, required: true },
+			institution: { type: String },
+			city: { type: String },
+			country: { type: String },
+			title: { type: String },
 			speciality: { type: String },
-			from: { type: Date, required: true },
-			to: { type: Date, required: true },
+			from: { type: Date },
+			to: { type: Date },
 			description: { type: String },
 			current: { type: Boolean, default: false }
 		}
 	],
 	location: {
-		state: { type: String, required: true },
-		city: { type: String, required: true },
-		country: { type: String, required: true }
+		state: { type: String },
+		city: { type: String },
+		country: { type: String }
 	},
 	//* Account Information
 	account: { type: Schema.Types.ObjectId, ref: 'account' },

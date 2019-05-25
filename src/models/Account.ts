@@ -12,18 +12,17 @@ const AccountSchema = new Schema({
 	description: { type: String },
 	address:
 	{
-		address: { type: String, required: true },
+		address: { type: String },
 		address2: { type: String },
-		state: { type: String, required: true },
-		city: { type: String, required: true },
-		country: { type: String, required: true }
+		state: { type: String },
+		city: { type: String },
+		country: { type: String }
 	},
 	//* Contact Information
 	phones: [
 		{
-			phone: { type: String, required: true },
+			phone: { type: String },
 			phone_type: { type: String }
-
 		}
 	],
 	emails: [
@@ -41,7 +40,7 @@ const AccountSchema = new Schema({
 		website: { type: String },
 	},
 	//* Primary Admin information
-	admin_name: { type: String, required: true },
+	admin_name: { type: String },
 	admin_email: { type: String, required: true, unique: true },
 	is_admin_email_verified: { type: Boolean, default: false },
 	contact_phone: { type: String },

@@ -23,7 +23,7 @@ class UserController extends Helpers {
 	 */
 	public register = async (req: Request, res: Response): Promise<any> => {
 		try {
-			const { firstName, middleName, lastName, lastName2, email, password, account_type, role } = req.body;
+			const { email, password, account_type } = req.body;
 
 			//* Checking if user exists
 			const user = await User.findOne({ email });
@@ -39,7 +39,6 @@ class UserController extends Helpers {
 
 			//* Links new user with an account
 			const newAccountData = {
-				admin_name: firstName + ' ' + lastName,
 				admin_email: email,
 				account_type,
 				verificationToken,
@@ -51,21 +50,17 @@ class UserController extends Helpers {
 
 			// * if the user does not exist, the user is registered
 			const newUserData = {
-				role,
-				firstName,
-				middleName,
-				lastName,
-				lastName2,
 				email,
 				password,
 				public_serchable: true,
-				userName: email.split('')[0],
+				userName: email.split('@')[0],
+				role: 'doctor',
 				access_level: 'full-access',
 				account: newAccount._id
 			};
 
 			//* Message Data to send to verification email
-			const messageData = { firstName, lastName, email, token: verificationToken };
+			const messageData = { email, token: verificationToken };
 
 			//* Encrypt user password
 			bcrypt.genSalt(12, (err, salt) => {
@@ -161,7 +156,7 @@ class UserController extends Helpers {
 			const user = await User.findOne({ email });
 
 			if (user) {
-				throw {checkEmail: `El correo ${email} ya esta registrado`};
+				throw {checkEmail: `Este correo ya esta registrado`};
 			} else {
 				res.status(200).json({ message: 'Email is correct and available'  })
 			}
