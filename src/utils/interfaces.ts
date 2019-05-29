@@ -38,3 +38,20 @@ export interface IProfileCreation {
 	speciality?: string;
 	JVPM?: string;
 }
+
+export interface Ismtp_data {
+	host: string;
+	port: number;
+	smtp_user: string;
+	smtp_pwd: string
+}
+
+export interface Imsg_data {
+	from: string;
+	to: string; 
+	bcc?: string;
+	replyTo?: string;
+	subject: string;
+	text?: string; 
+	html: string;
+}

@@ -1,9 +1,6 @@
 import { Strategy as JwtStrategy } from 'passport-jwt'
 import { ExtractJwt } from 'passport-jwt'
 import User from '../models/User';
-if(process.env.NODE_ENV !== "production") {
-	require('dotenv').config();
-}
 
 
 const opts = {

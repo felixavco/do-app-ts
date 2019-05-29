@@ -5,9 +5,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User';
 import Account from '../models/Account';
-if (process.env.NODE_ENV !== 'production') {
-	require('dotenv').config();
-}
+
 
 class UserController extends Helpers {
 	private SECRET: string = process.env.SECRET || '';
