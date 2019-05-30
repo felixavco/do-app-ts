@@ -25,7 +25,7 @@ export interface IClinic {
 	logo?: string;
 	password?: string;
 	password2?: string;
-	address?: string; 
+	address?: string;
 	phones?: string;
 	emails?: string;
 }
@@ -41,17 +41,29 @@ export interface IProfileCreation {
 
 export interface Ismtp_data {
 	host: string;
-	port: number;
+	port: any;
 	smtp_user: string;
 	smtp_pwd: string
 }
 
 export interface Imsg_data {
 	from: string;
-	to: string; 
+	to: string;
 	bcc?: string;
 	replyTo?: string;
 	subject: string;
-	text?: string; 
+	text?: string;
 	html: string;
+}
+
+export interface Ipayload {
+    _id: Document;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    access_level: string;
+    active: boolean;
+    avatar: boolean;
+    account: Document;
 }

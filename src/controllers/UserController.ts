@@ -5,6 +5,10 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from '../models/User';
 import Account from '../models/Account';
+import Mailer from '../mailer/Mailer';
+//* SMTP
+import { Imsg_data } from '../utils/interfaces';
+import { smtp_data } from '../config/config';
 
 
 class UserController extends Helpers {
@@ -14,10 +18,23 @@ class UserController extends Helpers {
 		super();
 	}
 
+    public verificationMessage = (toEmail, token): Imsg_data => {
+        const data = {
+            from: "no-reply@doc-app.com",
+            to: toEmail,
+            replyTo: "nobody@doc-app.com",
+            subject: "Bienvenido a Doc-app, por favor verifique su direccion de correo",
+            text: "verifique su cuenta",
+            html: `<p>Verify your account, <a href="http://localhost:7000/verify/${token}">Click Here</a></p>`
+        };
+    return data
+
+    }
+
 	/**
 	 * Name: register
-	 * Path: /api/user/register //*Public POST 
-	 * Description: Register new user with super admin rights, sends a confirmation email and returns jwt token 
+	 * Path: /api/user/register //*Public POST
+	 * Description: Register new user with super admin rights, sends a confirmation email and returns jwt token
 	 */
 	public register = async (req: Request, res: Response): Promise<any> => {
 		try {
@@ -69,7 +86,11 @@ class UserController extends Helpers {
 					const newUser = await new User(newUserData).save();
 
 					//TODO Send Verification Token PENDING.... send verification message
-					console.log(messageData);
+
+
+
+					const mailer = new Mailer(smtp_data, this.verificationMessage(email, verificationToken))
+                    await mailer.send();
 
 					//* Prepare data to be via token
 					const payload = {
@@ -100,7 +121,7 @@ class UserController extends Helpers {
 	/**
 	 * Name: login
 	 * Path: /api/user/login  //*Public POST
-	 * Description: Authentices user and returns a web token 
+	 * Description: Authentices user and returns a web token
 	 */
 	public login = async (req: Request, res: Response): Promise<any> => {
 		try {
@@ -238,11 +259,11 @@ class UserController extends Helpers {
 			const account: any = await Account.findByIdAndUpdate(_id, updatedTokenInfo, { new: true });
 
 			//* Message Data to send to verification email
-			const { admin_name, admin_email, verificationToken: token } = account;
-			const messageData = { admin_name, admin_email, token };
+			const { admin_email, verificationToken: token } = account;
 
 			//TODO Pending implement send mail functionality
-			console.log(messageData);
+			const mailer = new Mailer(smtp_data, this.verificationMessage(admin_email, token))
+            await mailer.send();
 
 			res.status(200).json({ message: 'verification token sent' });
 		} catch (error) {
