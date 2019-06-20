@@ -4,9 +4,9 @@ import Helpers from '../utils/Helpers';
 
 const AccountSchema = new Schema({
 	//* Basic Information
-	name: { type: String, unique: true },
-	url: { type: String, unique: true },
-	domain: { type: String, unique: true },
+	name: { type: String, unique: true, sparse: true },
+	url: { type: String, unique: true, sparse: true },
+	domain: { type: String, unique: true, sparse: true },
 	logo: { type: String },
 	account_type: { type: String },
 	description: { type: String },

@@ -18,18 +18,18 @@ class UserController extends Helpers {
 		super();
 	}
 
-    public verificationMessage = (toEmail, token): Imsg_data => {
-        const data = {
-            from: "no-reply@doc-app.com",
-            to: toEmail,
-            replyTo: "nobody@doc-app.com",
-            subject: "Bienvenido a Doc-app, por favor verifique su direccion de correo",
-            text: "verifique su cuenta",
-            html: `<p>Verify your account, <a href="http://localhost:7000/verify/${token}">Click Here</a></p>`
-        };
-    return data
+	public verificationMessage = (toEmail: string, token: string): Imsg_data => {
+		const data = {
+			from: "no-reply@doc-app.com",
+			to: toEmail,
+			replyTo: "nobody@doc-app.com",
+			subject: "Bienvenido a Doc-app, por favor verifique su direccion de correo",
+			text: "verifique su cuenta",
+			html: `<p>Verify your account, <a href="http://localhost:7000/verify/${token}">Click Here</a></p>`
+		};
+		return data
 
-    }
+	}
 
 	/**
 	 * Name: register
@@ -86,11 +86,9 @@ class UserController extends Helpers {
 					const newUser = await new User(newUserData).save();
 
 					//TODO Send Verification Token PENDING.... send verification message
-
-
-
-					const mailer = new Mailer(smtp_data, this.verificationMessage(email, verificationToken))
-                    await mailer.send();
+					// const mailer = new Mailer(smtp_data, this.verificationMessage(email, verificationToken))
+					// await mailer.send();
+			
 
 					//* Prepare data to be via token
 					const payload = {
@@ -175,9 +173,9 @@ class UserController extends Helpers {
 			const user = await User.findOne({ email });
 
 			if (user) {
-				throw {checkEmail: `Este correo ya esta registrado`};
+				throw { checkEmail: `Este correo ya esta registrado` };
 			} else {
-				res.status(200).json({ message: 'Email is correct and available'  })
+				res.status(200).json({ message: 'Email is correct and available' })
 			}
 
 		} catch (error) {
@@ -263,7 +261,7 @@ class UserController extends Helpers {
 
 			//TODO Pending implement send mail functionality
 			const mailer = new Mailer(smtp_data, this.verificationMessage(admin_email, token))
-            await mailer.send();
+			await mailer.send();
 
 			res.status(200).json({ message: 'verification token sent' });
 		} catch (error) {
