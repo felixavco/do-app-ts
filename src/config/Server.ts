@@ -1,9 +1,9 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import passport from 'passport';
 import cors from 'cors';
 import morgan from 'morgan';
 import passportJWT from './passportJWT';
+import sequelize from './connectionDB';
 
 //* Routes imports
 import userRoutes from '../routes/userRoutes';
@@ -13,12 +13,10 @@ import patientRoutes from '../routes/patientRoutes';
 
 class Server {
 	private PORT: number;
-	private MONGO_URI: string;
 	private server: any;
 
-	constructor(PORT: any, MONGO_URI: any) {
+	constructor(PORT: any) {
 		this.PORT = PORT;
-		this.MONGO_URI = MONGO_URI;
 		this.server = express();
 		this.config();
 		this.routes();
@@ -31,7 +29,6 @@ class Server {
 		this.server.use(express.json());
 		this.server.use(passport.initialize());
 		passportJWT(passport);
-		mongoose.set('useFindAndModify', false);
 	}
 
 	private routes(): void {
@@ -42,16 +39,16 @@ class Server {
 	}
 
 	public start(): void {
-		mongoose
-			.connect(this.MONGO_URI, {
-				useNewUrlParser: true,
-				useCreateIndex: true
-			})
-			.then(() => {
-				console.log('Connected to DB');
-				this.server.listen(this.PORT, () => console.log('Server started on port ' + this.PORT));
-			})
-			.catch((err) => console.error(err));
+		sequelize
+		.authenticate()
+		.then(() => {
+			console.log("Connected to DB");
+			this.server.listen(this.PORT, () => console.log('Server started on port ' + this.PORT));
+		})
+		.catch((err) => {
+			console.error("Connection Error:" + err);
+		})
+		
 	}
 }
 

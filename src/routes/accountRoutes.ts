@@ -16,8 +16,8 @@ class AccountRoutes extends AccountController {
   }
 
   private routes(): void {
-    this.router.get('/profile/:account_id', this.getAccountProfile);
-		this.router.post('/profile', this.protected, createClinicValidation, this.accountProfile);
+    // this.router.get('/profile/:account_id', this.getAccountProfile);
+		// this.router.post('/profile', this.protected, createClinicValidation, this.accountProfile);
 	}
 
 	public getRouter() {
